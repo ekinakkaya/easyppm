@@ -69,19 +69,19 @@ int ppm_paint_fill(ppmdata_t *ppm, int x1, int y1, int x2, int y2, unsigned char
 }
 
 
-int ppm_paint_spray();
-int ppm_paint_gradient();
+//int ppm_paint_spray();
+//int ppm_paint_gradient();
 
-int ppm_draw_dot();
-int ppm_draw_line();
-int ppm_draw_circle();
-int ppm_draw_rect();
-int ppm_draw_diagonal();
+//int ppm_draw_dot();
+//int ppm_draw_line();
+//int ppm_draw_circle();
+//int ppm_draw_rect();
+//int ppm_draw_diagonal();
 
 
-int    ppm_write_from_buf(ppmdata_t *ppm, int x, int y, unsigned char *buf, int buf_x, int buf_y);
-int    ppm_write_from_buf_to_coordinate(ppmdata_t *ppm, int x, int y, unsigned char *buf, int buf_x, int buf_y);
-char * ppm_pixel_read(ppmdata_t *ppm, int x, int y);
+//int    ppm_write_from_buf(ppmdata_t *ppm, int x, int y, unsigned char *buf, int buf_x, int buf_y);
+//int    ppm_write_from_buf_to_coordinate(ppmdata_t *ppm, int x, int y, unsigned char *buf, int buf_x, int buf_y);
+//char * ppm_pixel_read(ppmdata_t *ppm, int x, int y);
 
 int    ppm_save_to_file(ppmdata_t *ppm, char filename[256]) {
     FILE *fp = fopen(filename, "wb");
