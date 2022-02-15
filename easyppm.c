@@ -4,11 +4,7 @@
 #include "easyppm.h"
 
 
-#define DEBUG 1
-
-
-#define IMAGE_WIDTH  400 // X
-#define IMAGE_HEIGHT 400 // Y
+#define DEBUG 0
 
 
 ppmdata_t *ppm_init(int x, int y) {
@@ -95,7 +91,15 @@ int    ppm_save_to_file(ppmdata_t *ppm, char filename[256]) {
 
     return 0;
 }
-int    ppm_free(ppmdata_t *ppm);
+
+
+int ppm_free(ppmdata_t *ppm) {
+    free(ppm->pixel_data);
+    free(ppm);
+    ppm = NULL;
+
+    return 0;
+}
 
 
 void ppm_print_chunk(ppmdata_t *ppm, int startX, int startY, int endX, int endY) {
