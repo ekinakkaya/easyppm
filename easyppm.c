@@ -128,34 +128,3 @@ void ppm_print_chunk(ppmdata_t *ppm, int startX, int startY, int endX, int endY)
 }
 
 
-/*
-
-int main() {
-    ppmdata_t *ppmdata = ppm_init(IMAGE_WIDTH, IMAGE_HEIGHT);
-    ppm_print_chunk(ppmdata, 0, 0, 10, 10);
-
-    ppm_write_to_pixel(ppmdata, 0, 0, 1, 1, 1);
-    ppm_write_to_pixel(ppmdata, 1, 0, 2, 2, 2);
-    ppm_write_to_pixel(ppmdata, 0, 1, 2, 2, 2);
-    ppm_write_to_pixel(ppmdata, 5, 3, 111, 222, 123);
-    ppm_print_chunk(ppmdata, 0, 0, 10, 10);
-
-
-    ppm_write_to_pixel(ppmdata, 300, 300, 1, 1, 1);
-    ppm_write_to_pixel(ppmdata, 301, 301, 1, 1, 1);
-    ppm_write_to_pixel(ppmdata, 302, 302, 1, 1, 1);
-    ppm_write_to_pixel(ppmdata, 303, 303, 1, 1, 1);
-    ppm_write_to_pixel(ppmdata, 304, 304, 1, 1, 1);
-    ppm_print_chunk(ppmdata, 300, 300, 310, 310);
-
-    ppm_paint_fill(ppmdata, 305, 305, 310, 310, 200, 200, 2);
-    ppm_print_chunk(ppmdata, 300, 300, 310, 310);
-
-    ppm_save_to_file(ppmdata, "testwowwowwow.ppm");
-
-    
-    return 0;
-}
-
-
-*/
