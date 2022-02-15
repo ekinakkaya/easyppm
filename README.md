@@ -5,5 +5,9 @@ small .ppm library for doing various image-related tasks. .ppm files can be comp
 ## compile and run
 with gcc:
 ```sh
+# random-noise example
 gcc example.c easyppm.c && ./a.out
+
+# looped memory test for leaks
+gcc memtest.c easyppm.c && ./a.out
 ```
