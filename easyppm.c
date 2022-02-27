@@ -7,6 +7,15 @@
 #define DEBUG 0
 
 
+// TODO: add error messages to every function
+//const char *ERR_MSG[] = {};
+//enum ERR_MSG {
+//    ERR_PPM_IS_NULL,
+//    ERR_PARAM_OUT_OF_BOUNDS,
+//    ERR_MALLOC_FAILED,
+//}
+// kinda like this maybe?
+
 ppmdata_t *ppm_init(int x, int y) {
     unsigned long data_size = x * y * 3;
 
