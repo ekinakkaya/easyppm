@@ -79,13 +79,6 @@ int ppm_paint_fill(ppmdata_t *ppm, int x1, int y1, int x2, int y2, unsigned char
     if (y2 >= 0 && y2 < ppmy)
         return -2;
 
-    if (r >= 0 && r <= 255)
-        return -2;
-    if (g >= 0 && g <= 255)
-        return -2;
-    if (b >= 0 && b <= 255)
-        return -2;
-
 
     // fill every pixel with same color
 
