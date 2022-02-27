@@ -33,11 +33,8 @@ ppmdata_t *ppm_init(int x, int y) {
 
 
 int ppm_write_to_pixel(ppmdata_t *ppm, int x, int y, unsigned char r, unsigned char g, unsigned char b) {
-    // TODO: check validity of all values
-
-    // pixel [x, y]
-    // pixel [1, 1]
-    // pixel [y * X + x]
+    // don't check the validity of the values. this function is heavily used.
+    // just make sure your values are valid.
     
     int data_index = x * 3 + y * ppm->x * 3;
     ppm->pixel_data[data_index + 0] = r;
@@ -57,7 +54,29 @@ int ppm_write_to_pixel(ppmdata_t *ppm, int x, int y, unsigned char r, unsigned c
 
 
 int ppm_paint_fill(ppmdata_t *ppm, int x1, int y1, int x2, int y2, unsigned char r, unsigned char g, unsigned char b) {
-    // TODO: check validity of all passed values
+    if (ppm == NULL)
+        return -1;
+
+    int ppmx = ppm->x;
+    int ppmy = ppm->y;
+
+    if (x1 >= 0 && x1 < ppmx)
+        return -2;
+    if (y1 >= 0 && y1 < ppmy)
+        return -2;
+
+    if (x2 >= 0 && x2 < ppmx)
+        return -2;
+    if (y2 >= 0 && y2 < ppmy)
+        return -2;
+
+    if (r >= 0 && r <= 255)
+        return -2;
+    if (g >= 0 && g <= 255)
+        return -2;
+    if (b >= 0 && b <= 255)
+        return -2;
+
 
     // fill every pixel with same color
 
@@ -83,7 +102,10 @@ int ppm_paint_fill(ppmdata_t *ppm, int x1, int y1, int x2, int y2, unsigned char
 //int    ppm_write_from_buf_to_coordinate(ppmdata_t *ppm, int x, int y, unsigned char *buf, int buf_x, int buf_y);
 //char * ppm_pixel_read(ppmdata_t *ppm, int x, int y);
 
-int    ppm_save_to_file(ppmdata_t *ppm, char filename[256]) {
+int ppm_save_to_file(ppmdata_t *ppm, char filename[256]) {
+    if (ppm == NULL)
+        return -1;
+
     FILE *fp = fopen(filename, "wb");
     fprintf(fp, "P6\n%d %d\n255\n", ppm->x, ppm->y);
     fwrite(ppm->pixel_data, ppm->x * ppm->y * 3, 1, fp);
@@ -103,7 +125,18 @@ int ppm_free(ppmdata_t *ppm) {
 
 
 void ppm_print_chunk(ppmdata_t *ppm, int startX, int startY, int endX, int endY) {
-    // TODO: check validity of all values
+    if (ppm == NULL)
+        return;
+
+    if (startX >= 0 && startX < ppm->x)
+        return;
+    if (startY >= 0 && startY < ppm->x)
+        return;
+    if (endX >= 0 && endX < ppm->x)
+        return;
+    if (endY >= 0 && endY < ppm->x)
+        return;
+
     if ( !(startX < ppm->x && startY < ppm->y  && endX < ppm->x && endY < ppm->y) ) {
         printf("easyppm [error, (void) ppm_print_chunk()]: invalid coordinate parameters");
         return;
