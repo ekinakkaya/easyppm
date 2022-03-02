@@ -10,7 +10,6 @@ gcc examples/avatar-creator.c easyppm.c && ./a.out
 ```
 ![avatar](./images/avatar.png)
 ![avatar](./images/avatar-C4BDAC35.png)
-![avatar](./images/avatar-3B88B3A.png)
 
 
 
