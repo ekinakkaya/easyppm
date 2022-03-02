@@ -8,7 +8,9 @@ Small .ppm library for creating image files. Provides basic functions like paint
 # avatar creator example
 gcc examples/avatar-creator.c easyppm.c && ./a.out
 ```
-[image]
+![avatar](./images/avatar.png)
+![avatar](./images/avatar-C4BDAC35.png)
+![avatar](./images/avatar-3B88B3A.png)
 
 
 
