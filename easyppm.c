@@ -185,21 +185,21 @@ int ppm_paint_fill(ppmdata_t *ppm, int x1, int y1, int x2, int y2, unsigned char
     int ppmx = ppm->x;
     int ppmy = ppm->y;
 
-    if (x1 >= 0 && x1 < ppmx)
+    if (!(x1 >= 0 && x1 < ppmx))
         ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
-    if (y1 >= 0 && y1 < ppmy)
-        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
-
-    if (x2 >= 0 && x2 < ppmx)
-        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
-    if (y2 >= 0 && y2 < ppmy)
+    if (!(y1 >= 0 && y1 < ppmy))
         ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
 
-    if (r >= 0 && r < 256)
+    if (!(x2 >= 0 && x2 < ppmx))
+        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
+    if (!(y2 >= 0 && y2 < ppmy))
+        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
+
+    if (!(r >= 0 && r < 256))
         ppm_error(PPM_ERR__value_out_of_bounds, __FUNCTION__);
-    if (g >= 0 && g < 256)
+    if (!(g >= 0 && g < 256))
         ppm_error(PPM_ERR__value_out_of_bounds, __FUNCTION__);
-    if (b >= 0 && b < 256)
+    if (!(b >= 0 && b < 256))
         ppm_error(PPM_ERR__value_out_of_bounds, __FUNCTION__);
 
 
@@ -257,13 +257,13 @@ void ppm_print_chunk(ppmdata_t *ppm, int startX, int startY, int endX, int endY)
     if (ppm == NULL)
         ppm_error(PPM_ERR__ppmdata_t_is_null, __FUNCTION__);
 
-    if (startX >= 0 && startX < ppm->x)
+    if (!(startX >= 0 && startX < ppm->x))
         ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
-    if (startY >= 0 && startY < ppm->x)
+    if (!(startY >= 0 && startY < ppm->x))
         ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
-    if (endX >= 0 && endX < ppm->x)
+    if (!(endX >= 0 && endX < ppm->x))
         ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
-    if (endY >= 0 && endY < ppm->x)
+    if (!(endY >= 0 && endY < ppm->x))
         ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
 
     printf("resolution: %dx%d\n", ppm->x, ppm->y);
