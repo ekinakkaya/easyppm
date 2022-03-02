@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
 
 #include "easyppm.h"
 
@@ -15,6 +17,115 @@
 //    ERR_MALLOC_FAILED,
 //}
 // kinda like this maybe?
+enum PPM_ERR {
+    PPM_ERR__error_not_specified = 500,
+
+    PPM_ERR__malloc_failed,
+
+    PPM_ERR__ppmdata_t_is_null,
+
+    PPM_ERR__value_out_of_bounds,
+    PPM_ERR__coordinate_out_of_bounds,
+
+    PPM_ERR__fopen_failed,
+    PPM_ERR__fprintf_failed,
+    PPM_ERR__fwrite_failed,
+    PPM_ERR__fclose_failed,
+
+    PPM_ERR__,
+};
+
+// https://blog.podkalicki.com/bit-level-operations-bit-flags-and-bit-masks/
+#define PPMERRFLAG_WARN (1 << 0) // 1 (01)
+#define PPMERRFLAG_EXIT (1 << 1) // 2 (10)
+
+
+char error_msg_buffer[2048];
+
+
+void ppm_error_msg(int err, const char *at_func) {
+    char e[2048];
+    strcpy(e, "ppm: \033[0;31m error: ");
+    strcpy(error_msg_buffer, e);
+
+    switch (err) {
+        case PPM_ERR__error_not_specified:
+            sprintf(e, "Error not specified."); break;
+        case PPM_ERR__malloc_failed:
+            sprintf(e, "'malloc() failed'"); break;
+        case PPM_ERR__ppmdata_t_is_null:
+            sprintf(e, "'ppmdata_t structure is null'"); break;
+        case PPM_ERR__value_out_of_bounds:
+            sprintf(e, "'Value out of bounds'"); break;
+        case PPM_ERR__coordinate_out_of_bounds:
+            sprintf(e, "'Coordinate out of bounds'"); break;
+        case PPM_ERR__fopen_failed:
+            sprintf(e, "'fopen() failed'"); break;
+        case PPM_ERR__fprintf_failed:
+            sprintf(e, "'fprintf() failed'"); break;
+        case PPM_ERR__fwrite_failed:
+            sprintf(e, "'fwrite() failed"); break;
+        case PPM_ERR__fclose_failed:
+            sprintf(e, "'fclose() failed'"); break;
+    }
+    strcat(e, "\033[0m\n");
+    strcat(error_msg_buffer, e);
+
+    sprintf(e, "      inside this function: '%s()'\n", at_func);
+    strcat(error_msg_buffer, e);
+}
+
+
+void ppm_error_msg_print(int err);
+
+
+int ppm_error(int err, const char *at_func) {
+    error_msg_buffer[0] = '\0';
+    switch (err) {
+        case PPM_ERR__error_not_specified:
+            ppm_error_msg(err, at_func);
+            printf("%s\n", error_msg_buffer);
+            break;
+        case PPM_ERR__malloc_failed:
+            ppm_error_msg(err, at_func);
+            printf("%s\n", error_msg_buffer);
+            break;
+        case PPM_ERR__ppmdata_t_is_null:
+            ppm_error_msg(err, at_func);
+            printf("%s\n", error_msg_buffer);
+            break;
+        case PPM_ERR__value_out_of_bounds:
+            ppm_error_msg(err, at_func);
+            printf("%s\n", error_msg_buffer);
+            break;
+        case PPM_ERR__coordinate_out_of_bounds:
+            ppm_error_msg(err, at_func);
+            printf("%s\n", error_msg_buffer);
+            break;
+        case PPM_ERR__fopen_failed:
+            ppm_error_msg(err, at_func);
+            printf("%s\n", error_msg_buffer);
+            break;
+        case PPM_ERR__fprintf_failed:
+            ppm_error_msg(err, at_func);
+            printf("%s\n", error_msg_buffer);
+            break;
+        case PPM_ERR__fwrite_failed:
+            ppm_error_msg(err, at_func);
+            printf("%s\n", error_msg_buffer);
+            break;
+        case PPM_ERR__fclose_failed:
+            ppm_error_msg(err, at_func);
+            printf("%s\n", error_msg_buffer);
+            break;
+
+    }
+    return 0;
+}
+
+void ppm_catch_error(int error_code, const char *at_func, int err_msg_code) {
+    printf("error code: %d\nat func: '%s'\n", error_code, at_func);
+}
 
 ppmdata_t *ppm_init(int x, int y) {
     unsigned long data_size = x * y * 3;
@@ -22,12 +133,17 @@ ppmdata_t *ppm_init(int x, int y) {
     ppmdata_t *ppm = NULL;
 
     ppm = malloc(sizeof(ppmdata_t));
+    if (ppm == NULL)
+        ppm_error(PPM_ERR__malloc_failed, __FUNCTION__);
     if (DEBUG) printf("addr of ppm -> %p\n", ppm);
 
     ppm->x = x; ppm->y = y;
     if (DEBUG) printf("ppm->x = %d, ppm->y = %d\n", ppm->x, ppm->y);
 
     ppm->pixel_data = malloc(sizeof(char) * x * y * 3);
+    if (ppm->pixel_data == NULL)
+        ppm_error(PPM_ERR__malloc_failed, __FUNCTION__);
+
     if (DEBUG) printf("addr of pixel_data -> %p\n", ppm->pixel_data);
 
     for (int i = 0; i < data_size; i++)
@@ -63,21 +179,27 @@ int ppm_write_to_pixel(ppmdata_t *ppm, int x, int y, unsigned char r, unsigned c
 
 
 int ppm_paint_fill(ppmdata_t *ppm, int x1, int y1, int x2, int y2, unsigned char r, unsigned char g, unsigned char b) {
-    if (ppm == NULL)
-        return -1;
+    if (ppm == NULL) ppm_error(PPM_ERR__ppmdata_t_is_null, __FUNCTION__);
 
     int ppmx = ppm->x;
     int ppmy = ppm->y;
 
     if (x1 >= 0 && x1 < ppmx)
-        return -2;
+        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
     if (y1 >= 0 && y1 < ppmy)
-        return -2;
+        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
 
     if (x2 >= 0 && x2 < ppmx)
-        return -2;
+        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
     if (y2 >= 0 && y2 < ppmy)
-        return -2;
+        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
+
+    if (r >= 0 && r < 256)
+        ppm_error(PPM_ERR__value_out_of_bounds, __FUNCTION__);
+    if (g >= 0 && g < 256)
+        ppm_error(PPM_ERR__value_out_of_bounds, __FUNCTION__);
+    if (b >= 0 && b < 256)
+        ppm_error(PPM_ERR__value_out_of_bounds, __FUNCTION__);
 
 
     // fill every pixel with same color
@@ -106,11 +228,15 @@ int ppm_paint_fill(ppmdata_t *ppm, int x1, int y1, int x2, int y2, unsigned char
 
 int ppm_save_to_file(ppmdata_t *ppm, char filename[256]) {
     if (ppm == NULL)
-        return -1;
+        ppm_error(PPM_ERR__ppmdata_t_is_null, __FUNCTION__);
 
+    // TODO: catch error
     FILE *fp = fopen(filename, "wb");
+    // TODO: catch error
     fprintf(fp, "P6\n%d %d\n255\n", ppm->x, ppm->y);
+    // TODO: catch error
     fwrite(ppm->pixel_data, ppm->x * ppm->y * 3, 1, fp);
+    // TODO: catch error
     fclose(fp);
 
     return 0;
@@ -128,21 +254,16 @@ int ppm_free(ppmdata_t *ppm) {
 
 void ppm_print_chunk(ppmdata_t *ppm, int startX, int startY, int endX, int endY) {
     if (ppm == NULL)
-        return;
+        ppm_error(PPM_ERR__ppmdata_t_is_null, __FUNCTION__);
 
     if (startX >= 0 && startX < ppm->x)
-        return;
+        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
     if (startY >= 0 && startY < ppm->x)
-        return;
+        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
     if (endX >= 0 && endX < ppm->x)
-        return;
+        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
     if (endY >= 0 && endY < ppm->x)
-        return;
-
-    if ( !(startX < ppm->x && startY < ppm->y  && endX < ppm->x && endY < ppm->y) ) {
-        printf("easyppm [error, (void) ppm_print_chunk()]: invalid coordinate parameters");
-        return;
-    }
+        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
 
     printf("resolution: %dx%d\n", ppm->x, ppm->y);
     printf("pixels painted %lu times, chunks painted %lu times\n",
