@@ -38,6 +38,7 @@ enum PPM_ERR {
 // https://blog.podkalicki.com/bit-level-operations-bit-flags-and-bit-masks/
 #define PPMERRFLAG_WARN (1 << 0) // 1 (01)
 #define PPMERRFLAG_EXIT (1 << 1) // 2 (10)
+// TODO: implement: exit on critical error
 
 
 char error_msg_buffer[2048];
@@ -76,6 +77,7 @@ void ppm_error_msg(int err, const char *at_func) {
 }
 
 
+//TODO
 void ppm_error_msg_print(int err);
 
 
@@ -123,9 +125,8 @@ int ppm_error(int err, const char *at_func) {
     return 0;
 }
 
-void ppm_catch_error(int error_code, const char *at_func, int err_msg_code) {
-    printf("error code: %d\nat func: '%s'\n", error_code, at_func);
-}
+//TODO
+void ppm_catch_error(int error_code, const char *at_func, int err_msg_code);
 
 ppmdata_t *ppm_init(int x, int y) {
     unsigned long data_size = x * y * 3;
