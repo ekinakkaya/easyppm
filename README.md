@@ -3,13 +3,22 @@
 Small .ppm library for creating image files. Provides basic functions like painting pixels or chunks. ffmpeg can be used to convert ppm files to png files.
 
 ## examples
+Note: ```./ppmtopng.sh``` script can be used to convert and copy all .ppm images to ./images directory as .png files.
 
 ```sh
 # avatar creator example
 gcc examples/avatar-creator.c easyppm.c && ./a.out
 ```
-![avatar](./images/avatar.png)
-![avatar](./images/avatar-C4BDAC35.png)
+![avatar](./README-images/avatar.png)
+![avatar](./README-images/avatar-C4BDAC35.png)
+
+---
+```sh
+# text rendering example
+gcc examples/text-rendering.c easyppm.c && ./a.out
+```
+![avatar](./README-images/text.png)
+
 
 
 

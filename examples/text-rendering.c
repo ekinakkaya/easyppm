@@ -1,3 +1,4 @@
+// compile and run: gcc examples/text-rendering.c easyppm.c && ./a.out
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
