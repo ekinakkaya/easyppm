@@ -9,43 +9,55 @@
 #define DEBUG 0
 
 
-// TODO: add error messages to every function
-//const char *ERR_MSG[] = {};
-//enum ERR_MSG {
-//    ERR_PPM_IS_NULL,
-//    ERR_PARAM_OUT_OF_BOUNDS,
-//    ERR_MALLOC_FAILED,
-//}
-// kinda like this maybe?
-enum PPM_ERR {
-    PPM_ERR__error_not_specified = 500,
+// Global error info holder for ppm error functions.
+struct PPM_ERR_INFO_CONTAINER ppm_error_info_holder;
 
-    PPM_ERR__malloc_failed,
 
-    PPM_ERR__ppmdata_t_is_null,
+// writes to the global error info data structure ppm_error_info_holder
+// char ppm_error_info_holder.text[PPM_ERRINFO_CONTAINER_BUFSIZ]
+void ppm_err_info_set__text(char text[PPM_ERRINFO_CONTAINER_BUFSIZ]) {
+    strcpy(ppm_error_info_holder.text, text);
+}
 
-    PPM_ERR__value_out_of_bounds,
-    PPM_ERR__coordinate_out_of_bounds,
+// writes to the global error info data structure ppm_error_info_holder
+// char ppm_error_info_holder.c[PPM_ERRINFO_CONTAINER_BUFSIZ]
+void ppm_err_info_set__c(char c[PPM_ERRINFO_CONTAINER_BUFSIZ]) {
+    strcpy(ppm_error_info_holder.c, c);
+}
 
-    PPM_ERR__fopen_failed,
-    PPM_ERR__fprintf_failed,
-    PPM_ERR__fwrite_failed,
-    PPM_ERR__fclose_failed,
+// writes to the global error info data structure ppm_error_info_holder
+// int ppm_error_info_holder.i[PPM_ERRINFO_CONTAINER_BUFSIZ]
+void ppm_err_info_set__i(int i[PPM_ERRINFO_CONTAINER_BUFSIZ]) {
+    for (int j = 0; j < PPM_ERRINFO_CONTAINER_BUFSIZ; j++)
+        ppm_error_info_holder.i[j] = i[j];
+}
 
-    PPM_ERR__,
-};
+// writes to the global error info data structure ppm_error_info_holder
+// unsigned int ppm_error_info_holder.ui[PPM_ERRINFO_CONTAINER_BUFSIZ]
+void ppm_err_info_set__ui(unsigned int ui[PPM_ERRINFO_CONTAINER_BUFSIZ]) {
+    for (int j = 0; j < PPM_ERRINFO_CONTAINER_BUFSIZ; j++)
+        ppm_error_info_holder.ui[j] = ui[j];
+}
+
+
 
 // https://blog.podkalicki.com/bit-level-operations-bit-flags-and-bit-masks/
 #define PPMERRFLAG_WARN (1 << 0) // 1 (01)
 #define PPMERRFLAG_EXIT (1 << 1) // 2 (10)
 // TODO: implement: exit on critical error
+// TODO: add: more flags if necessary
 
 
 char error_msg_buffer[2048];
 
 
 void ppm_error_msg(int err, const char *at_func) {
+    // just for readibility
+    PPM_ERR_INFO_C *einfo = &ppm_error_info_holder;
+
+    // temp error message buffer
     char e[2048];
+
     strcpy(e, "ppm: \033[0;31m error: ");
     strcpy(error_msg_buffer, e);
 
@@ -57,9 +69,11 @@ void ppm_error_msg(int err, const char *at_func) {
         case PPM_ERR__ppmdata_t_is_null:
             sprintf(e, "'ppmdata_t structure is null'"); break;
         case PPM_ERR__value_out_of_bounds:
-            sprintf(e, "'Value out of bounds'"); break;
+            sprintf(e, "'Value out of bounds'\n      value %d should be between (%d, %d)", einfo->i[0], einfo->i[1], einfo->i[2]);
+            break;
         case PPM_ERR__coordinate_out_of_bounds:
-            sprintf(e, "'Coordinate out of bounds'"); break;
+            sprintf(e, "'Coordinate out of bounds'\n      Coordinate value %d should be between (%d, %d)", einfo->i[0], einfo->i[1], einfo->i[2]);
+            break;
         case PPM_ERR__fopen_failed:
             sprintf(e, "'fopen() failed'"); break;
         case PPM_ERR__fprintf_failed:
@@ -74,15 +88,17 @@ void ppm_error_msg(int err, const char *at_func) {
 
     sprintf(e, "      inside this function: '%s()'\n", at_func);
     strcat(error_msg_buffer, e);
+
+    sprintf(e, "          einfo-text: %s\n", einfo->text);
+    strcat(error_msg_buffer, e);
 }
 
-
-//TODO
-void ppm_error_msg_print(int err);
 
 
 int ppm_error(int err, const char *at_func) {
     error_msg_buffer[0] = '\0';
+
+    // TODO: get errinfo structure and for every error, print err info
     switch (err) {
         case PPM_ERR__error_not_specified:
             ppm_error_msg(err, at_func);
@@ -185,22 +201,45 @@ int ppm_paint_fill(ppmdata_t *ppm, int x1, int y1, int x2, int y2, unsigned char
     int ppmx = ppm->x;
     int ppmy = ppm->y;
 
-    if (!(x1 >= 0 && x1 < ppmx))
-        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
-    if (!(y1 >= 0 && y1 < ppmy))
-        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
+    int errinfo[1024];
 
-    if (!(x2 >= 0 && x2 < ppmx))
+    if (!(x1 >= 0 && x1 < ppmx)) {
+        errinfo[0] = x1; errinfo[1] = 0; errinfo[2] = ppmx;
+        ppm_err_info_set__i(errinfo);
         ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
-    if (!(y2 >= 0 && y2 < ppmy))
+    }
+    if (!(y1 >= 0 && y1 < ppmy)) {
+        errinfo[0] = y1; errinfo[1] = 0; errinfo[2] = ppmy;
+        ppm_err_info_set__i(errinfo);
         ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
+    }
 
-    if (!(r >= 0 && r < 256))
+    if (!(x2 >= 0 && x2 < ppmx)) {
+        errinfo[0] = x2; errinfo[1] = 0; errinfo[2] = ppmx;
+        ppm_err_info_set__i(errinfo);
+        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
+    }
+    if (!(y2 >= 0 && y2 < ppmy)) {
+        errinfo[0] = y2; errinfo[1] = 0; errinfo[2] = ppmy;
+        ppm_err_info_set__i(errinfo);
+        ppm_error(PPM_ERR__coordinate_out_of_bounds, __FUNCTION__);
+    }
+
+    if (!(r >= 0 && r < 256)) {
+        errinfo[0] = r; errinfo[1] = 0; errinfo[2] = 256;
+        ppm_err_info_set__i(errinfo);
         ppm_error(PPM_ERR__value_out_of_bounds, __FUNCTION__);
-    if (!(g >= 0 && g < 256))
+    }
+    if (!(g >= 0 && g < 256)) {
+        errinfo[0] = g; errinfo[1] = 0; errinfo[2] = 256;
+        ppm_err_info_set__i(errinfo);
         ppm_error(PPM_ERR__value_out_of_bounds, __FUNCTION__);
-    if (!(b >= 0 && b < 256))
+    }
+    if (!(b >= 0 && b < 256)) {
+        errinfo[0] = b; errinfo[1] = 0; errinfo[2] = 256;
+        ppm_err_info_set__i(errinfo);
         ppm_error(PPM_ERR__value_out_of_bounds, __FUNCTION__);
+    }
 
 
     // fill every pixel with same color
